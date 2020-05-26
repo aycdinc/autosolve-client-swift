@@ -26,7 +26,7 @@ class Validator {
     
     private static func makeValidateRequest(accessToken: String, apiKey: String, clientKey: String) -> Int {
         let url = URL(string: "https://dash.autosolve.aycd.io/rest/\(accessToken)/verify/\(apiKey)?clientId=\(clientKey)")
-        let semaphore = DispatchSemaphore(value: 0)
+        var timer = 0.0
         var statusCode: Int?
         guard let requestUrl = url else { fatalError() }
         var request = URLRequest(url: requestUrl)
@@ -36,16 +36,18 @@ class Validator {
             if let error = error {
                 print("Error took place in AutoSolve validation \(error)")
                 statusCode = 0
+                return
             } else if let response = response as? HTTPURLResponse {
                 statusCode = response.statusCode
             } else {
                 statusCode = 0
             }
-
-            semaphore.signal()
         }
         task.resume()
-        _ = semaphore.wait(timeout: DispatchTime.init(uptimeNanoseconds: 30000000000))
+        repeat {
+            timer += 0.1
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+        } while statusCode == nil && timer < 30.0
         return statusCode!
     }
 }
