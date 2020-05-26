@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
   spec.author             = { "Apriscott" => "scott@kapelewski.com" }
   spec.ios.deployment_target = "13.0"
   spec.source       = { :git => "https://github.com/aycdinc/autosolve-client-swift.git", :tag => "#{spec.version}" }
-  spec.source_files  = "AutoSolveClient", "AutoSolveClient/Messaging/*", "AutoSolveClient/AutoSolveConnectionDelegate/*"
+  spec.source_files  = "AutoSolveClient", "AutoSolveClient/Messaging/*", "AutoSolveClient/AutoSolveConnectionDelegate/*", "AutoSolveClient/Utils/*",
   spec.dependency "RMQClient"
   spec.dependency "Emit"
 
