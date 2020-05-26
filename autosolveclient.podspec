@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "AutoSolveClient"
-  spec.version      = "0.0.4"
+  spec.version      = "0.0.5"
   spec.summary      = "AYCD AutoSolve Client"
   spec.description  = <<-DESC
     Swift client for connecting to the AYCD AutoSolve network. Uses RMQClient and Emit as dependencies
