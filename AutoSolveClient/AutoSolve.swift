@@ -109,7 +109,7 @@ public class AutoSolve {
         let c = RMQConnection(uri: "amqp://\(self.accountId):\(self.accessToken)@\(AutoSolveConstants.Hostname):5672/\(AutoSolveConstants.Vhost)",
                 userProvidedConnectionName: "autosolve-connection",
                 delegate: connectionDelegate,
-                recoverAfter: 2,
+                recoverAfter: 1000,
                 recoveryAttempts: 1,
                 recoverFromConnectionClose: true)
         c.start()
