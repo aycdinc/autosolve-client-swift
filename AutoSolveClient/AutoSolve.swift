@@ -56,7 +56,7 @@ public class AutoSolve {
         self.connectionEmitter = Signal<AutoSolveConnectionEvent>()
     }
 
-    public func createConnection(accessToken: String, apiKey: String) throws {
+    public func createConnection(accessToken: String, apiKey: String) {
         return DispatchQueue.global(qos: .utility).async {
             self.debugLogger(message: "Creating AutoSolve Connection")
             self.accessToken = accessToken
@@ -165,11 +165,7 @@ public class AutoSolve {
     private func reconnect() {
         let seconds = getDelay(attempts: self.connectionAttempts)
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-            do {
-                try self.attemptConnection()
-            } catch {
-                print("Error occurred in Reconnect. Attempting retry")
-            }
+            self.attemptConnection()
         }
     }
 
@@ -188,13 +184,9 @@ public class AutoSolve {
             self.debugLogger(message: "Disconnected from AutoSolve service")
         } else {
             if(!self.attemptingReconnect) {
-                do {
-                    self.attemptingReconnect = true
-                    self.connected = false
-                    try self.reconnect()
-                } catch {
-
-                }
+                self.attemptingReconnect = true
+                self.connected = false
+                self.reconnect()
             }
         }
     }
@@ -207,7 +199,7 @@ public class AutoSolve {
         message.apiKey = self.apiKey
         let json = Encoding.encode(message: message)
 
-        if(self.directChannel! != nil && self.connected) {
+        if(self.directChannel != nil && self.connected) {
             if(self.directChannel!.isOpen()) {
                 self.debugLogger(message: "Sending request for task ID :: \(message.taskId)")
                 self.directChannel!.basicPublish(json.data(using: .utf8)!, routingKey: self.tokenSendRoutingKey, exchange: self.directExchangeName, properties: [])
@@ -223,7 +215,7 @@ public class AutoSolve {
         let cancelMessage = AutoSolveCancelRequest(taskId: taskId, apiKey: self.apiKey, responseRequired: self.shouldAlertOnCancel)
         let json = Encoding.encode(message: cancelMessage)
 
-        if(self.fanoutChannel! != nil && self.connected) {
+        if(self.fanoutChannel != nil && self.connected) {
             if(self.fanoutChannel!.isOpen()) {
                 self.debugLogger(message: "Cancelling request for task ID :: \(taskId)")
                 self.fanoutChannel!.basicPublish(json.data(using: .utf8)!, routingKey: self.cancelSendRoutingKey, exchange: self.fanoutExchangeName, properties: [])
@@ -239,7 +231,7 @@ public class AutoSolve {
         let cancelMessage = AutoSolveCancelRequest(apiKey: self.apiKey, responseRequired: self.shouldAlertOnCancel)
         let json = Encoding.encode(message: cancelMessage)
 
-        if(self.fanoutChannel! != nil && self.connected) {
+        if(self.fanoutChannel != nil && self.connected) {
             if(self.fanoutChannel!.isOpen()) {
                 self.debugLogger(message: "Cancelling requests for api key :: \(self.apiKey)")
                 self.fanoutChannel!.basicPublish(json.data(using: .utf8)!, routingKey: self.cancelSendRoutingKey, exchange: self.fanoutExchangeName, properties: [])

@@ -47,6 +47,4 @@ class Validator {
         }
         task.resume()
     }
-
-
 }
