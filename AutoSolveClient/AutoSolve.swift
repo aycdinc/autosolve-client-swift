@@ -57,13 +57,15 @@ public class AutoSolve {
     }
 
     public func createConnection(accessToken: String, apiKey: String) throws {
-        self.debugLogger(message: "Creating AutoSolve Connection")
-        self.accessToken = accessToken
-        self.apiKey = apiKey
+        return DispatchQueue.global(qos: .utility).async {
+            self.debugLogger(message: "Creating AutoSolve Connection")
+            self.accessToken = accessToken
+            self.apiKey = apiKey
 
-        self.closeConnection()
-        self.buildRoutingKeys()
-        try self.attemptConnection()
+            self.closeConnection()
+            self.buildRoutingKeys()
+            self.attemptConnection()
+        }
     }
 
     public func closeConnection() {
@@ -76,31 +78,42 @@ public class AutoSolve {
     /*      CONNECTIONS     */
     /************************/
 
-    private func attemptConnection() throws {
+    private func attemptConnection() {
         self.debugLogger(message: "Validating Credentials")
-        if(try Validator.validateCredentials(accessToken: self.accessToken, apiKey: self.apiKey, clientKey: self.clientKey)) {
-            self.debugLogger(message: "Validation Successful")
-            self.connection = connect()
-            let completed =
-                    createChannels() &&
-                            bindQueues() &&
-                            subscribeQueues()
+        Validator.validateCredentials(accessToken: self.accessToken, apiKey: self.apiKey, clientKey: self.clientKey, completionHandler: self.connectAfterValidation)
+    }
 
-            if(completed) {
-                self.connectionAttempts = 0
-                self.connected = true
-                self.attemptingReconnect = false
-                self.processBacklog()
-                self.debugLogger(message: "AutoSolve Connected")
-            }
-            else {
+    private func connectAfterValidation(statusCode: Int?, autoSolveError: AutoSolveError?) {
+        if(autoSolveError != nil) {
+            self.errorEmitter.emit(autoSolveError!)
+        } else {
+            if(statusCode == 200) {
+                return beginConnection()
+            } else {
                 self.connectionAttempts += 1
-                self.debugLogger(message: "Error occurred during the connection process")
-                try self.reconnect()
+                self.reconnect()
             }
+        }
+    }
+
+    private func beginConnection() {
+        self.debugLogger(message: "Validation Successful")
+        self.connection = connect()
+        let completed =
+                createChannels() &&
+                        bindQueues() &&
+                        subscribeQueues()
+
+        if (completed) {
+            self.connectionAttempts = 0
+            self.connected = true
+            self.attemptingReconnect = false
+            self.processBacklog()
+            self.debugLogger(message: "AutoSolve Connected")
         } else {
             self.connectionAttempts += 1
-            try self.reconnect()
+            self.debugLogger(message: "Error occurred during the connection process")
+            self.reconnect()
         }
     }
 
@@ -109,7 +122,7 @@ public class AutoSolve {
         let c = RMQConnection(uri: "amqp://\(self.accountId):\(self.accessToken)@\(AutoSolveConstants.Hostname):5672/\(AutoSolveConstants.Vhost)",
                 userProvidedConnectionName: "autosolve-connection",
                 delegate: connectionDelegate,
-                recoverAfter: 2,
+                recoverAfter: 1000,
                 recoveryAttempts: 1,
                 recoverFromConnectionClose: true)
         c.start()
@@ -149,7 +162,7 @@ public class AutoSolve {
         return true
     }
 
-    private func reconnect() throws {
+    private func reconnect() {
         let seconds = getDelay(attempts: self.connectionAttempts)
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
             do {
