@@ -9,7 +9,7 @@
 import Foundation
 
 public class AutoSolveCancelResponse : AutoSolveResponse {
-    let requests: [AutoSolveTokenRequest]
+    public let requests: [AutoSolveTokenRequest]
     
     init(requests: [AutoSolveTokenRequest]) {
         self.requests = requests

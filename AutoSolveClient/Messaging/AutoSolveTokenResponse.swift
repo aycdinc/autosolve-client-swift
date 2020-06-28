@@ -9,10 +9,10 @@
 import Foundation
 
 public class AutoSolveTokenResponse : AutoSolveResponse {
-    let request: AutoSolveTokenRequest
-    let createdAt: Int
-    let token: String
-    let taskId: String
+    public let request: AutoSolveTokenRequest
+    public let createdAt: Int
+    public let token: String
+    public let taskId: String
     
     init(request: AutoSolveTokenRequest, createdAt: Int, token: String, taskId: String) {
         self.request = request
