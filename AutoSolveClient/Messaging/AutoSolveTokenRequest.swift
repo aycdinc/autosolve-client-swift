@@ -9,19 +9,19 @@
 import Foundation
 
 public class AutoSolveTokenRequest : AutoSolveRequest{
-    var taskId: String
-    var apiKey: String
-    var createdAt: Int
-    let url: String
-    let siteKey: String
-    let renderParameters: [String : String]
-    let version: Int
-    let action: String
-    let minScore: Double
-    let proxy: String
-    let proxyRequired: Bool
-    let userAgent: String
-    let cookies: String
+    public var taskId: String
+    public var apiKey: String
+    public var createdAt: Int
+    public let url: String
+    public let siteKey: String
+    public let renderParameters: [String : String]
+    public let version: Int
+    public let action: String
+    public let minScore: Double
+    public let proxy: String
+    public let proxyRequired: Bool
+    public let userAgent: String
+    public let cookies: String
     
     public init(taskId: String, url: String, siteKey: String, renderParameters: [String : String] = [:], version: Int = 0,
          action: String = "", minScore: Double = 0.3, proxy: String = "", proxyRequired: Bool = false, userAgent: String = "", cookies: String = "") {
