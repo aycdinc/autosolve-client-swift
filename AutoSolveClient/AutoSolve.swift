@@ -114,7 +114,7 @@ public class AutoSolve {
         } else {
             self.connectionAttempts += 1
             self.debugLogger(message: "Error occurred during the connection process")
-            self.errorEmitter.emit(AutoSolveError.InitConnectionError)
+            self.connectionEmitter.emit(AutoSolveConnectionEvent.FailedConnection)
             self.reconnect()
         }
     }
