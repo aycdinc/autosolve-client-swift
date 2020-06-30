@@ -109,10 +109,12 @@ public class AutoSolve {
             self.connected = true
             self.attemptingReconnect = false
             self.processBacklog()
+            self.connectionEmitter.emit(AutoSolveConnectionEvent.Connected)
             self.debugLogger(message: "AutoSolve Connected")
         } else {
             self.connectionAttempts += 1
             self.debugLogger(message: "Error occurred during the connection process")
+            self.errorEmitter.emit(AutoSolveError.InitConnectionError)
             self.reconnect()
         }
     }

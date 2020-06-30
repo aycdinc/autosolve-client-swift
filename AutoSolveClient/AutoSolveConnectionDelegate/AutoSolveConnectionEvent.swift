@@ -13,4 +13,5 @@ public enum AutoSolveConnectionEvent {
     case FailedConnection
     case StartRecovery
     case ChannelError
+    case Connected
 }
