@@ -9,7 +9,7 @@
 import Foundation
 
 public class AutoSolveConstants {
-    static let Hostname = "rabbit.autosolve.io";
+    static let Hostname = "amqp.autosolve.aycd.io";
     static let DirectExchange = "exchanges.direct";
     static let FanoutExchange = "exchanges.fanout";
     static let TokenResponseQueuePrefix = "queues.response.direct"
