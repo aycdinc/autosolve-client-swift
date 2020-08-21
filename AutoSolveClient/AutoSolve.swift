@@ -121,7 +121,7 @@ public class AutoSolve {
 
     private func connect() -> RMQConnection {
         let connectionDelegate = AutoSolveDelegate.init(autoSolve: self)
-        let c = RMQConnection(uri: "amqp://\(self.accountId):\(self.accessToken)@\(AutoSolveConstants.Hostname):5672/\(AutoSolveConstants.Vhost)",
+        let c = RMQConnection(uri: "amqp://\(self.accountId):\(self.accessToken)@\(AutoSolveConstants.Hostname):5672/\(AutoSolveConstants.Vhost)?heartbeat=10",
                 userProvidedConnectionName: "autosolve-connection",
                 delegate: connectionDelegate,
                 recoverAfter: 1000,
